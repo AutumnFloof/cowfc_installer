@@ -471,7 +471,7 @@ if [ "$CANRUN" == "TRUE" ]; then
         # Then we will check to see if the Gits for CoWFC and dwc_network_server_emulator exist
         if [ ! -d "/var/www/CoWFC" ]; then
             echo "Git for CoWFC does not exist in /var/www/"
-            while ! git clone https://github.com/EnergyCube/CoWFC.git && [ "$C1" -le "4" ]; do
+            while ! git clone https://github.com/AutumnFloof/CoWFC.git && [ "$C1" -le "4" ]; do
                 echo "GIT CLONE FAILED! Retrying....."
                 ((C1 = C1 + 1))
             done
