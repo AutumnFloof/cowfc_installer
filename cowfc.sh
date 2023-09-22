@@ -8,11 +8,12 @@ if [ "$REPLY" != "ACCEPT" ]; then
     echo "Verification FAILED!"
     exit 2
 fi
-read -rp "Just in case you were trigger-happy, I'll need you to type ACCEPT.: "
+
 if [ "$REPLY" != "ACCEPT" ]; then
     echo "Verification FAILED!"
     exit 2
 fi
+
 # DWC Network Installer script by kyle95wm/beanjr/EnergyCube - re-written for CoWFC
 # Warn Raspberry Pi users - probably a better way of doing this
 if [ -d /home/pi/ ]; then
@@ -20,6 +21,7 @@ if [ -d /home/pi/ ]; then
     echo "Please use the older script here: https://github.com/EnergyCube/dwc_network_installer"
     exit 1
 fi
+
 # Check if we already installed the server
 if [ -f /etc/.dwc_installed ]; then
     echo "You already installed CoWFC. There is no need to re-run it.
@@ -31,6 +33,7 @@ nuke your system, re-install everything with this script and restore gpcm.db and
     echo "And if you wish to uninstall everything, just nuke your system."
     exit 999
 fi
+
 # ensure running as root
 if [ "$(id -u)" != "0" ]; then
     exec sudo "$0" "$@"
@@ -59,7 +62,7 @@ export LC_ALL=en_US.UTF-8
 # We'll create our secret locale file
 touch /var/www/.locale-done
 
-# Variables used by the script in various sections to pre-fill long commandds
+# Variables used by the script in various sections to pre-fill long commands
 C1="0"            # A counting variable
 C2="0"            # A counting variable
 IP=""             # Used for user input
@@ -68,8 +71,9 @@ mod1="proxy"      # This is a proxy mod that is dependent on the other 2
 mod2="proxy_http" # This is related to mod1
 mod3="php7.4"
 UPDATE_FILE="$0.tmp"
-UPDATE_BASE="https://raw.githubusercontent.com/EnergyCube/cowfc_installer/master/cowfc.sh"
-# Functions
+UPDATE_BASE="https://raw.githubusercontent.com/AutumnFloof/cowfc_installer/master/cowfc.sh"
+
+#functions
 
 function update() {
     # The following lines will check for an update to this script if the -s switch
@@ -217,6 +221,7 @@ EOF
     a2ensite *.wiimmfi.de.conf
     service apache2 restart
 }
+
 function apache_mods() {
     a2enmod $mod1 $mod2
     service apache2 restart
@@ -271,13 +276,18 @@ EOF
 function install_required_packages() {
     echo "echo "Installing required packages...""
     # Add required package requires packages
-    sudo apt install curl git net-tools dnsmasq -y
+	
+	#suspend systemd-resolved.service to free port 53 for dnsmaq binding
+	sudo apt install curl git net-tools dnsmasq -y
+	sudo systemctl stop systemd-resolved.service
+	sudo systemctl restart dnsmaq
+	sudo systemctl start systemd-resolved.service
     # Add PHP 7.4 repo
     if [ ! -f "/var/www/.php74-added" ]; then
         echo "Adding the PHP 7.4 repository. Please follow any prompts."
-        if ! add-apt-repository ppa:jczaplicki/xenial-php74-temp; then
+        if ! add-apt-repository ppa:ondrej/php; then
             apt-get install --force-yes software-properties-common python-software-properties -y
-            add-apt-repository ppa:jczaplicki/xenial-php74-temp
+            add-apt-repository ppa:ondrej/php
         fi
         sleep 2s
         echo "Creating file to tell the script you already added the repo"
@@ -297,6 +307,7 @@ function install_required_packages() {
     # Install the other required packages
     apt-get install --force-yes apache2 python2.7 python-twisted dnsmasq git curl -y
 }
+
 function config_mysql() {
     echo "We will now configure MYSQL server."
     debconf-set-selections <<<'mysql-server mysql-server/root_password password passwordhere'
@@ -328,6 +339,7 @@ function config_mysql() {
     echo "Now inserting user $firstuser into the database with password $password, hashed as $hash."
     echo "insert into users (Username, Password, Rank) values ('$firstuser','$hash','$firstuserrank');" | mysql -u root -ppasswordhere cowfc
 }
+
 function re() {
     echo "For added security, we recommend setting up Google's reCaptcha.
 
@@ -352,6 +364,7 @@ Feel free to press the ENTER key at the prompt, to skip reCaptcha setup, or 'y' 
         sed -i -e "s/recaptcha_enabled = 1/recaptcha_enabled = 0/g" /var/www/html/config.ini
     fi
 }
+
 function set-server-name() {
     echo "This recent CoWFC update allows you to set your server's name"
     echo "This is useful if you want to whitelabel your server, and not advertise it as CoWFC"
@@ -363,6 +376,7 @@ function set-server-name() {
         sed -i -e "s/name = 'CoWFC'/name = '$servernameconfig'/g" /var/www/html/config.ini
     fi
 }
+
 function add-cron() {
     echo "Checking if there is a cron available for $USER"
     if ! crontab -l -u "$USER" | grep "@reboot sh /start-altwfc.sh >/cron-logs/cronlog 2>&1"; then
@@ -387,6 +401,7 @@ EOF
         echo "Done!"
     fi
 }
+
 function install_website() {
     # First we will delete evertyhing inside of /var/www/html
     rm -rf /var/www/html/*
@@ -433,7 +448,7 @@ fi
 # but if we're running Debian, it should be enough for what we need this check
 # to do.
 if [ -f /etc/lsb-release ]; then
-    if grep -q "14.04" /etc/lsb-release || grep -q "16.04" /etc/lsb-release || grep -q "20.04" /etc/lsb-release; then
+    if grep -q "14.04" /etc/lsb-release || grep -q "16.04" /etc/lsb-release || grep -q "22.04" /etc/lsb-release; then
         CANRUN="TRUE"
     elif [ -f /var/www/.aws_install ]; then
         CANRUN="TRUE"
