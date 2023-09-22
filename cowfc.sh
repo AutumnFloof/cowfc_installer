@@ -517,7 +517,7 @@ EOF
         touch /etc/.dwc_installed
         echo "Thank you for installing CoWFC."
 		systemctl stop systemd-resolved
-		systemctl restart mysql
+		systemctl restart dnsmasq
 		systemctl start systemd-resolved
 		systemctl restart apache2
         echo "If you wish to access the admin GUI, please go to http://$IP/?page=admin&section=Dashboard"
