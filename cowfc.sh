@@ -337,7 +337,7 @@ function config_mysql() {
     echo "Now importing dumped cowfc database..."
     mysql -u root -ppasswordhere cowfc </var/www/CoWFC/SQL/cowfc.sql
     echo "Now inserting user $firstuser into the database with password $password, hashed as $hash."
-    echo "insert into users (Username, Password, Ranx) values ('$firstuser','$hash','$firstuserrank');" | mysql -u root -ppasswordhere cowfc
+    echo "insert into users (Username, Password, `Rank`) values ('$firstuser','$hash','$firstuserrank');" | mysql -u root -ppasswordhere cowfc
 }
 
 function re() {
@@ -516,6 +516,10 @@ EOF
         echo "Finishing..."
         touch /etc/.dwc_installed
         echo "Thank you for installing CoWFC."
+		systemctl stop systemd-resolved
+		systemctl restart mysql
+		systemctl start systemd-resolved
+		systemctl restart apache2
         echo "If you wish to access the admin GUI, please go to http://$IP/?page=admin&section=Dashboard"
         read -rp "Please hit the ENTER key to reboot now, or press ctrl+c and reboot whenever it is convenient for you: [ENTER] " rebootenterkey
         if [ -z "$rebootenterkey" ]; then
