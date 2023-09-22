@@ -279,9 +279,9 @@ function install_required_packages() {
 	
 	#suspend systemd-resolved.service to free port 53 for dnsmaq binding
 	sudo apt install curl git net-tools dnsmasq -y
-	sudo systemctl stop systemd-resolved.service
+	sudo systemctl stop systemd-resolved
 	sudo systemctl restart dnsmaq
-	sudo systemctl start systemd-resolved.service
+	sudo systemctl start systemd-resolved
     # Add PHP 7.4 repo
     if [ ! -f "/var/www/.php74-added" ]; then
         echo "Adding the PHP 7.4 repository. Please follow any prompts."
@@ -337,7 +337,7 @@ function config_mysql() {
     echo "Now importing dumped cowfc database..."
     mysql -u root -ppasswordhere cowfc </var/www/CoWFC/SQL/cowfc.sql
     echo "Now inserting user $firstuser into the database with password $password, hashed as $hash."
-    echo "insert into users (Username, Password, Rank) values ('$firstuser','$hash','$firstuserrank');" | mysql -u root -ppasswordhere cowfc
+    echo "insert into users (Username, Password, Ranx) values ('$firstuser','$hash','$firstuserrank');" | mysql -u root -ppasswordhere cowfc
 }
 
 function re() {
