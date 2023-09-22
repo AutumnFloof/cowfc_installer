@@ -482,7 +482,7 @@ if [ "$CANRUN" == "TRUE" ]; then
         fi
         if [ ! -d "/var/www/dwc_network_server_emulator" ]; then
             echo "Git for dwc_network_server_emulator does not exist in /var/www"
-            while ! git clone https://github.com/EnergyCube/dwc_network_server_emulator.git && [ "$C2" -le "4" ]; do
+            while ! git clone https://github.com/AutumnFloof/dwc_network_server_emulator.git && [ "$C2" -le "4" ]; do
                 echo "GIT CLONE FAILED! Retrying......"
                 ((C2 = C2 + 1))
             done
